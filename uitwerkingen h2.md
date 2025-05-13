@@ -263,6 +263,138 @@ SELECT DISTINCT artiest FROM top2000 WHERE ed2019 <= 100 AND NOT ed2018 <= 100
 ```
 geeft ook die artiesten weer die in 2018 met een ander nummer in de top 100 stonden.
 
+# EINDOPDRACHTEN MET QUERY'S OP BASIS VAN ÉÉN TABEL
+### 127
+
+### 128
+```
+DROP DATABASE IF EXISTS `voornamen`;
+CREATE DATABASE `voornamen`;
+USE `voornamen`;
+
+CREATE TABLE `namen` (
+    `positie` int NOT NULL,
+    `naam` text NOT NULL,
+    `aantal` int NOT NULL,
+    `geslacht` varchar(1),
+);
+```
+
+### 129
+De positie komt sowieso tweemaal voor. Aantal en geslacht kunnen ook meerdere keren voorkomen. Alleen de naam zou uniek zijn, ware het niet dat sommige namen voor beide geslachten gebruikt kunnen worden (Anne, Charlie, ...)
+
+### 130
+De combinatie naam en geslacht is uniek. Deze twee attributen kunnen dus samen de primary key worden.
+
+### 131
+```
+SELECT positie, naam, aantal FROM namen
+WHERE positie <= 25 AND geslacht = 'V'
+ORDER BY positie
+```
+
+### 132
+Geef de namen en geslachten van alle registraties die tussen de 100.000 en 250.000 keer voorkomen.
+
+### 133
+```
+SELECT SUM(aantal)/1000000 as aantal FROM namen
+WHERE positie <= 100
+GROUP BY geslacht
+```
+
+### 134
+```
+SELECT COUNT(DISTINCT naam) as aantal FROM namen
+```
+
+### 135
+In de uitkomst van de query worden namen die gelijk zijn, op een bijzonder teken na (zoals een accent op een klinker), als verschillende namen gezien.
+
+### 136
+```
+SELECT geslacht, COUNT(naam) AS aantal FROM namen
+WHERE aantal > 50000
+GROUP BY geslacht
+```
+
+### 137
+Van de volgende twee query's
+```
+SELECT naam FROM namen WHERE naam LIKE 'Ren_'
+SELECT naam FROM namen WHERE naam LIKE 'Ren%'
+```
+zal de tweede meer resultaten opleveren. Het procentteken geeft aan dat alle namen die beginnen met 'Ren' meegeteld zullen worden. In de eerste query worden alleen vierletterige namen beginnend met 'Ren' meegenomen worden in het resultaat.
+
+### 138
+```
+SELECT ROUND(AVG(aantal)) AS gemiddeld_aantal_registraties FROM namen
+WHERE geslacht = 'M'
+AND naam LIKE 'M%'
+```
+
 # 2.7 MEERDERE TABELLEN BEVRAGEN
 ## ODPRACHT 21
-### 127
+### 139
+
+
+
+
+
+
+
+
+## OPDRACHT 25
+### 167
+```
+SELECT COUNT(titel) AS aantal FROM track
+WHERE artiest_id = (
+    SELECT artiest_id FROM artiest
+    WHERE naam = 'Ed Sheeran'
+)
+```
+
+### 168
+```
+SELECT naam, COUNT(track_id) as aantal FROM artiest, track
+WHERE artiest.artiest_id = track.artiest_id
+GROUP BY naam
+HAVING aantal = 
+(
+    SELECT COUNT(titel) AS aantal FROM track
+    WHERE artiest_id = (
+        SELECT artiest_id FROM artiest
+        WHERE naam = 'Ed Sheeran'
+    )
+)
+```
+
+### 169
+```
+SELECT uit, COUNT(track_id) as aantal FROM track, artiest
+WHERE track.artiest_id = artiest.artiest_id
+AND naam = 'ABBA'
+GROUP BY uit
+ORDER BY uit
+```
+
+### 170 
+
+### 171
+```
+SELECT naam, titel FROM artiest, track
+WHERE artiest.artiest_id = track.artiest_id
+AND track_id IN (
+    SELECT track_id FROM notering
+    WHERE positie = 2000
+    GROUP BY track_id 
+    HAVING COUNT(track_id) = 2
+)
+```
+
+## OPDRACHT 25
+### 172
+### 173
+### 174
+### 175
+### 176
